@@ -1,18 +1,25 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { HomeComponent } from './home/home.component';
+import { Component, VERSION } from '@angular/core';
+import { liveQuery } from 'dexie';
+import { TaskList, db } from './db';
+import { CommonModule, DatePipe } from '@angular/common';
+import {MatListModule} from '@angular/material/list';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-root',
   standalone: true,
-  imports: [
-    RouterOutlet,
-    HomeComponent,
-  ],
+  selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css'],
+  imports: [CommonModule, MatListModule, DatePipe, RouterLink]
 })
-
 export class AppComponent {
-  title = 'bs';
+  taskLists$ = liveQuery(() => db.taskLists.toArray());
+
+  async resetDatabase() {
+    await db.resetDatabase();
+  }
+
+  identifyList(index: number, list: TaskList) {
+    return `${list.id}${list.title}`;
+  }
 }

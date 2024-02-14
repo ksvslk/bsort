@@ -1,6 +1,12 @@
 <main>
   <section class="content">
-    <app-home></app-home>
+    <mat-selection-list *ngFor="let taskList of taskLists$ | async; trackBy: identifyList">
+      <mat-list-item>
+        <h3 matListItemTitle>{{taskList.title}}</h3>
+        <p matListItemLine>
+          <a [routerLink]="['/list', taskList.id]">{{taskList.date | date: 'mediumDate' }}</a>
+        </p>
+      </mat-list-item>
+    </mat-selection-list>
   </section>
 </main>
-<router-outlet />
