@@ -1,5 +1,5 @@
 import { ApplicationConfig, isDevMode } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
@@ -7,7 +7,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideServiceWorker } from '@angular/service-worker';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideRouter(routes), provideClientHydration(), provideAnimationsAsync(), provideServiceWorker('ngsw-worker.js', {
+    providers: [provideRouter(routes, withComponentInputBinding()), provideClientHydration(), provideAnimationsAsync(), provideServiceWorker('ngsw-worker.js', {
         enabled: !isDevMode(),
         registrationStrategy: 'registerWhenStable:30000'
     }), provideServiceWorker('ngsw-worker.js', {
@@ -15,3 +15,4 @@ export const appConfig: ApplicationConfig = {
         registrationStrategy: 'registerWhenStable:30000'
     })]
 };
+

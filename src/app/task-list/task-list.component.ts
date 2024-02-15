@@ -1,8 +1,9 @@
-import { Component, Input } from '@angular/core';
-import { liveQuery } from 'dexie';
-import { Task, db } from '../db';
+import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import {MatListModule} from '@angular/material/list';
 import { CommonModule } from '@angular/common';
+import { Task } from '../interface/task';
+import { TaskList } from '../interface/task-list';
+import { LocalStorageService } from '../local-storage.service';
 
 @Component({
   selector: 'app-task-list',
@@ -11,15 +12,21 @@ import { CommonModule } from '@angular/common';
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.css'
 })
-export class TaskListComponent {
-  @Input() listId!: number;
 
-  tasks$ = liveQuery(() => db.tasks.get(this.listId));
+export class TaskListComponent implements OnInit{
+  @Input() id!: number;
+  tasks$: Task[] = [];
 
-  identifyTask(index: number, task: Task) {
-    return `${task.id}${task.title}`;
+  constructor(private localStorageService: LocalStorageService) {
   }
 
+  ngOnInit(): void {
+    console.log(this.id)
+    this.tasks$ = this.localStorageService.getTasksByTaskListId(this.id);
+    console.log(this.tasks$)
+  }
+
+ 
 }
 
 

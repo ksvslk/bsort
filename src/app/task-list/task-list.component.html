@@ -1,1 +1,5 @@
-<p>tere</p>
+<mat-selection-list *ngFor="let task of tasks$">
+    <mat-list-item>
+        <h3 matListItemTitle>{{task.title}}</h3>
+    </mat-list-item>
+</mat-selection-list>
