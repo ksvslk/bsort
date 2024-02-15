@@ -20,6 +20,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {Inject} from '@angular/core';
 import {MAT_BOTTOM_SHEET_DATA} from '@angular/material/bottom-sheet';
 import {MatToolbarModule} from '@angular/material/toolbar';
+
 @Component({
   selector: 'app-task-list',
   standalone: true,
@@ -34,6 +35,11 @@ export class TaskListComponent implements OnInit {
   taskList$: TaskList | undefined;
 
   constructor(private _bottomSheet: MatBottomSheet, private router: Router, private localStorageService: LocalStorageService) {
+  }
+
+  ngOnInit(): void {
+    this.tasks$ = this.localStorageService.getTasksByTaskListId(this.id);
+    this.taskList$ = this.localStorageService.getTaskList(this.id);
   }
 
   openAddTaskSheet(): void {
@@ -83,14 +89,11 @@ export class TaskListComponent implements OnInit {
     this.router.navigateByUrl('/');
   }
 
-  ngOnInit(): void {
-    console.log(this.id)
-    this.tasks$ = this.localStorageService.getTasksByTaskListId(this.id);
-    this.taskList$ = this.localStorageService.getTaskList(this.id);
-    console.log(this.taskList$?.title)
-    console.log(this.tasks$)
+  goToSortPage(): void {
+    this.router.navigateByUrl('/sort/' + this.id);
   }
 
+  
 }
 
 @Component({
@@ -118,7 +121,6 @@ export class BottomSheetEditTask {
   currentTaskName$: string = ""
 
   constructor(@Inject(MAT_BOTTOM_SHEET_DATA) public data: {title: string}, private _bottomSheetRef: MatBottomSheetRef<BottomSheetEditTask>) {
-    console.log(data.title)
     this.currentTaskName$ = this.data.title;
   }
 
@@ -139,7 +141,6 @@ export class BottomSheetEditTaskList {
   currentTaskListName$: string = ""
 
   constructor(@Inject(MAT_BOTTOM_SHEET_DATA) public data: {title: string}, private _bottomSheetRef: MatBottomSheetRef<BottomSheetEditTaskList>) {
-    console.log(data.title)
     this.currentTaskListName$ = this.data.title;
   }
 

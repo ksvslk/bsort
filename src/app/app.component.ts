@@ -1,6 +1,5 @@
 import { Component, OnInit, VERSION } from '@angular/core';
 import {  RouterModule, RouterOutlet } from '@angular/router';
-import {MatToolbarModule} from '@angular/material/toolbar';
 import { filter } from 'rxjs/operators';
 import { LocalStorageService } from './local-storage.service';
 import { Router, NavigationEnd } from '@angular/router';
@@ -9,7 +8,7 @@ import { Router, NavigationEnd } from '@angular/router';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  imports: [RouterOutlet, MatToolbarModule, RouterModule]
+  imports: [RouterOutlet, RouterModule]
 })
 export class AppComponent implements OnInit {
   
