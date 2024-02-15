@@ -1,9 +1,25 @@
-<mat-selection-list *ngFor="let taskList of taskLists$">
-    <mat-list-item>
-        <h3 matListItemTitle>{{taskList.title}}</h3>
-        <p matListItemLine>
-            <a [routerLink]="['/list', taskList.id]">{{taskList.date | date: 'mediumDate' }}</a>
-        </p>
-    </mat-list-item>
-</mat-selection-list>    
+<div class="flex-column-container">
+    <div>
+        <input type="text" readonly="readonly" value="Prioritize Requirements"
+            class="text-xl font-bold my-2 w-full border-0 border-none outline-none" />
+    </div>
+    <div *ngIf="taskLists$.length != 0; then thenBlock else elseBlock"></div>
+    <ng-template #thenBlock>
+        <mat-selection-list *ngFor="let taskList of taskLists$">
+            <mat-list-item>
+                <h3 matListItemTitle>{{taskList.title}}</h3>
+                <p matListItemLine>
+                    <a [routerLink]="['/list', taskList.id]">{{taskList.date | date: 'mediumDate' }}</a>
+                </p>
+            </mat-list-item>
+        </mat-selection-list>
+    </ng-template>
+    <ng-template #elseBlock>
+        <div class="flex-center">No lists.</div>
+    </ng-template>
 
+    <button class="float-right" (click)="createNewTaskList()" mat-fab matTooltip="Primary" color="primary"
+        aria-label="Add List">
+        <mat-icon>add</mat-icon>
+    </button>
+</div>

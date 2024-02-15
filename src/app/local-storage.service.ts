@@ -8,11 +8,10 @@ import { TaskList } from '../app/interface/task-list';
 
 export class LocalStorageService {
   private taskListKey = 'taskLists';
-  private taskKey = 'tasks';
 
   constructor() {
     if (this.isLocalStorageSupported()) {
-      this.initializeDummyData();
+     // this.initializeDummyData();
     }
   }
 
@@ -27,7 +26,7 @@ export class LocalStorageService {
 
   private initializeDummyData(): void {
     // Check if data already exists to avoid overwriting
-    if (!localStorage.getItem(this.taskListKey) || !localStorage.getItem(this.taskKey)) {
+    if (!localStorage.getItem(this.taskListKey)) {
       const taskLists: TaskList[] = [
         { id: 1, title: 'Work', date: new Date(), prioritized: true },
         { id: 2, title: 'Home', date: new Date(), prioritized: false },
@@ -55,47 +54,71 @@ export class LocalStorageService {
     }
   }
 
-
-  // TaskList Operations
-  saveTaskList(taskList: TaskList): void {
-    const taskLists = this.getTaskLists();
-    const existingIndex = taskLists.findIndex(tl => tl.id === taskList.id);
-    if (existingIndex > -1) {
-      taskLists[existingIndex] = taskList;
-    } else {
-      const newId = taskLists.length > 0 ? Math.max(...taskLists.map(tl => tl.id || 0)) + 1 : 1;
-      taskList.id = newId; // Assign a new ID
-      taskLists.push(taskList);
+  addTask(title:string, taskListId:number):Task[]
+  {
+    const currentTasks = this.getTasks(taskListId);
+    const newTask:Task = {
+      taskListId: taskListId,
+      title: title
     }
-    localStorage.setItem(this.taskListKey, JSON.stringify(taskLists));
+    currentTasks.push(newTask);
+    console.log("Adding task: ", newTask)
+    localStorage.setItem(taskListId.toString(), JSON.stringify(currentTasks));
+     const r = this.getTasks(taskListId)
+    console.log("Result ", r)
+
+    return r;
   }
 
-  getTaskLists(): TaskList[] {
-    const taskLists = localStorage.getItem(this.taskListKey);
-    return taskLists ? JSON.parse(taskLists) : [];
+  getMaxId(taskLists: TaskList[]): number {
+    if (taskLists.length === 0) return 0;
+    const maxId = taskLists.reduce((max, currentList) => {
+      return currentList.id! > max! ? currentList.id : max;
+    }, taskLists[0].id);
+    return maxId ?? 0;
+  }
+
+  createNewTaskList():number {
+    const currentTaskLists = this.getTaskLists();
+    const newTaskListId = this.getMaxId(currentTaskLists) + 1
+    const defaultTaskList =  { id: newTaskListId, title: 'Project #' + newTaskListId, date: new Date(), prioritized: false };
+    currentTaskLists.push(defaultTaskList)
+    localStorage.setItem(this.taskListKey, JSON.stringify(currentTaskLists));
+    return newTaskListId;
   }
 
   deleteTaskList(id: number): void {
-    let taskLists = this.getTaskLists();
-    taskLists = taskLists.filter(tl => tl.id !== id);
-    localStorage.setItem(this.taskListKey, JSON.stringify(taskLists));
+    // delete the item with key same as the id, this deletes all tasks
+    localStorage.removeItem(id.toString());
+    // delete task list itself
+    let taskListsJson = localStorage.getItem(this.taskListKey)
+    console.log(taskListsJson)
+    const taskLists: TaskList[] = taskListsJson ? JSON.parse(taskListsJson) : [];
+    console.log(taskLists)
+    const updatedTaskLists = taskLists.filter(tl =>{
+      return tl.id != id
+    });
+    console.log(updatedTaskLists)
+    localStorage.setItem(this.taskListKey, JSON.stringify(updatedTaskLists));
   }
 
-  // Task Operations
-  saveTask(task: Task): void {
-    const tasks = this.getTasks(task.taskListId);
-    const existingIndex = tasks.findIndex(t => t.id === task.id);
-    if (existingIndex > -1) {
-      tasks[existingIndex] = task;
-    } else {
-      const newId = tasks.length > 0 ? Math.max(...tasks.map(t => t.id || 0)) + 1 : 1;
-      task.id = newId; // Assign a new ID
-      tasks.push(task);
-    }
-    localStorage.setItem(this.taskKey, JSON.stringify(tasks));
+  getTaskList(id:number): TaskList | undefined {
+    const taskLists = localStorage.getItem(this.taskListKey.toString());
+    const lists:[TaskList] = taskLists ? JSON.parse(taskLists) : [];
+    console.log("lists: ", lists)
+    const currentList = lists.find((value, _) => {
+      return value.id == id
+    });
+    console.log("currentList: ",currentList )
+    return currentList;
   }
 
-  getTasks(taskListId:number): Task[] {
+  getTaskLists(): TaskList[] {
+    const taskLists = localStorage.getItem(this.taskListKey.toString());
+    return taskLists ? JSON.parse(taskLists) : [];
+  }
+
+  getTasks(taskListId: number): Task[] {
     const tasks = localStorage.getItem(taskListId.toString());
     return tasks ? JSON.parse(tasks) : [];
   }
@@ -105,9 +128,4 @@ export class LocalStorageService {
     return this.getTasks(taskListId);
   }
 
-  deleteTask(id: number, taskListId:number): void {
-    let tasks = this.getTasks(taskListId);
-    tasks = tasks.filter(t => t.id !== id);
-    localStorage.setItem(this.taskKey, JSON.stringify(tasks));
-  }
 }

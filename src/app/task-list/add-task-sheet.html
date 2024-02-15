@@ -1,0 +1,8 @@
+<mat-nav-list>
+  <form class="example-form">
+    <mat-form-field class="w-full">
+      <input #newTask matInput placeholder="Write Task">
+    </mat-form-field>
+  </form>
+    <button (click)="addTask(newTask.value)" class="w-full" mat-raised-button color="primary">Add</button>
+</mat-nav-list>

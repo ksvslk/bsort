@@ -1,5 +1,21 @@
-<mat-selection-list *ngFor="let task of tasks$">
-    <mat-list-item>
-        <h3 matListItemTitle>{{task.title}}</h3>
-    </mat-list-item>
-</mat-selection-list>
+<div class="flex-column-container">
+    <div>
+        <input (blur)="changeTitle()" type="text" value={{taskList$?.title}} aria-selected="false"
+            class="text-xl font-bold my-2 w-full" />
+    </div>
+    <div *ngIf="tasks$.length != 0; then thenBlock else elseBlock"></div>
+    <ng-template #thenBlock>
+        <mat-selection-list *ngFor="let task of tasks$">
+            <mat-list-option [color]="'primary'">
+              {{task.title}}
+            </mat-list-option>
+        </mat-selection-list></ng-template>
+    <ng-template #elseBlock>
+        <div>No tasks.</div>
+    </ng-template>
+    <div class="float-right mt-4">
+        <button (click)="openAddTaskSheet()" mat-fab matTooltip="Add" color="secondary" aria-label="Add Task">
+            <mat-icon>add</mat-icon>
+        </button>
+    </div>
+</div>
