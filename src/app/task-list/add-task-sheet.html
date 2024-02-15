@@ -4,5 +4,5 @@
       <input #newTask matInput placeholder="Write Task">
     </mat-form-field>
   </form>
-    <button (click)="addTask(newTask.value)" class="w-full" mat-raised-button color="primary">Add</button>
+    <button (click)="addTask(newTask.value)" (keyup)="addTask(newTask.value)" class="w-full" mat-raised-button color="primary">Add</button>
 </mat-nav-list>

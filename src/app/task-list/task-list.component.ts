@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,12 +16,14 @@ import {
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormsModule} from '@angular/forms';
+import {MatMenuModule} from '@angular/material/menu';
+import {Inject} from '@angular/core';
 import {MAT_BOTTOM_SHEET_DATA} from '@angular/material/bottom-sheet';
-
+import {MatToolbarModule} from '@angular/material/toolbar';
 @Component({
   selector: 'app-task-list',
   standalone: true,
-  imports: [MatListModule, CommonModule, MatButtonModule, MatIconModule, RouterModule, MatBottomSheetModule],
+  imports: [MatListModule, MatToolbarModule, CommonModule, MatButtonModule, MatIconModule,MatMenuModule, RouterModule, MatBottomSheetModule],
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.css'
 })
@@ -30,7 +32,6 @@ export class TaskListComponent implements OnInit {
   @Input() id!: number;
   tasks$: Task[] = [];
   taskList$: TaskList | undefined;
-  isEditing$: boolean = false;
 
   constructor(private _bottomSheet: MatBottomSheet, private router: Router, private localStorageService: LocalStorageService) {
   }
@@ -46,10 +47,36 @@ export class TaskListComponent implements OnInit {
     });
   }
 
-  changeTitle(): void {
-    console.log("changing title")
+  openEditTaskSheet(taskId:number, taskName:string): void {
+    this._bottomSheet.open(BottomSheetEditTask, {
+      data: { title : taskName },
+    }).afterDismissed().subscribe(taskEdit => {
+      if (taskEdit && taskEdit.result.length > 0)
+      {
+        this.renameTaskTitle(taskId, taskEdit.result);
+      }
+    });
   }
 
+  openEditTaskListSheet(): void {
+    this._bottomSheet.open(BottomSheetEditTaskList, {
+      data: { title : this.taskList$?.title },
+    }).afterDismissed().subscribe(taskListNameEdit => {
+      if (taskListNameEdit && taskListNameEdit.result.length > 0)
+      {
+        this.taskList$ = this.localStorageService.changeTitle(taskListNameEdit.result, this.id)
+      }
+    });
+  }
+
+  deleteTask(taskId:number)
+  {
+    this.tasks$ = this.localStorageService.deleteTask(taskId, this.id);
+  }
+
+  renameTaskTitle(taskId:number, newTitle:string){
+    this.tasks$ = this.localStorageService.renameTitleOfTask(taskId, this.id, newTitle);
+  }
 
   deleteTaskList(): void {
     this.localStorageService.deleteTaskList(this.id);
@@ -74,10 +101,50 @@ export class TaskListComponent implements OnInit {
 })
 export class BottomSheetAddTask {
   constructor(private _bottomSheetRef: MatBottomSheetRef<BottomSheetAddTask>) { }
+
   addTask(title:string) {
     const returnData = { result: title };
     this._bottomSheetRef.dismiss(returnData);
   }
 }
 
+@Component({
+  selector: 'edit-task-sheet',
+  templateUrl: 'edit-task-sheet.html',
+  standalone: true,
+  imports: [MatListModule, MatButtonModule,FormsModule, MatFormFieldModule, MatInputModule],
+})
+export class BottomSheetEditTask {
+  currentTaskName$: string = ""
 
+  constructor(@Inject(MAT_BOTTOM_SHEET_DATA) public data: {title: string}, private _bottomSheetRef: MatBottomSheetRef<BottomSheetEditTask>) {
+    console.log(data.title)
+    this.currentTaskName$ = this.data.title;
+  }
+
+  renameTaskName(newTitle:string) {
+    const returnData = { result: newTitle };
+    this._bottomSheetRef.dismiss(returnData);
+  }
+}
+
+
+@Component({
+  selector: 'edit-tasklist-sheet',
+  templateUrl: 'edit-tasklist-sheet.html',
+  standalone: true,
+  imports: [MatListModule, MatButtonModule,FormsModule, MatFormFieldModule, MatInputModule],
+})
+export class BottomSheetEditTaskList {
+  currentTaskListName$: string = ""
+
+  constructor(@Inject(MAT_BOTTOM_SHEET_DATA) public data: {title: string}, private _bottomSheetRef: MatBottomSheetRef<BottomSheetEditTaskList>) {
+    console.log(data.title)
+    this.currentTaskListName$ = this.data.title;
+  }
+
+  renameTaskListTitle(newTitle:string) {
+    const returnData = { result: newTitle };
+    this._bottomSheetRef.dismiss(returnData);
+  }
+}

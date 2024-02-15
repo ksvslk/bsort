@@ -9,3 +9,19 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .flex-column-container {
     @apply p-8;
 }
+
+.md-fab-bottom-fixed-right {
+    top: auto !important;
+    right: 20px !important;
+    bottom: 20px !important;
+    left: auto !important;
+    position: fixed !important;
+}
+
+.md-button-bottom-fixed {
+    top: auto !important;
+    bottom: 20px !important;
+    left: 20px !important;
+    right: 20px !important;
+    position: fixed !important;
+}

@@ -1,0 +1,8 @@
+<mat-nav-list>
+  <form class="example-form">
+    <mat-form-field class="w-full">
+      <input #editTask matInput value={{currentTaskName$}}>
+    </mat-form-field>
+  </form>
+    <button (click)="renameTaskName(editTask.value)" (keyup)="renameTaskName(editTask.value)" class="w-full" mat-raised-button color="primary">Rename</button>
+</mat-nav-list>

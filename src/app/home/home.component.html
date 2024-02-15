@@ -1,25 +1,23 @@
 <div class="flex-column-container">
-    <div>
-        <input type="text" readonly="readonly" value="Prioritize Requirements"
-            class="text-xl font-bold my-2 w-full border-0 border-none outline-none" />
-    </div>
+    <mat-toolbar>
+        Prioritize Requirements
+    </mat-toolbar>
     <div *ngIf="taskLists$.length != 0; then thenBlock else elseBlock"></div>
     <ng-template #thenBlock>
         <mat-selection-list *ngFor="let taskList of taskLists$">
-            <mat-list-item>
+            <mat-list-item [routerLink]="['/', taskList.id]">
                 <h3 matListItemTitle>{{taskList.title}}</h3>
                 <p matListItemLine>
-                    <a [routerLink]="['/list', taskList.id]">{{taskList.date | date: 'mediumDate' }}</a>
+                    {{taskList.date | date: 'mediumDate' }}
                 </p>
             </mat-list-item>
         </mat-selection-list>
     </ng-template>
     <ng-template #elseBlock>
-        <div class="flex-center">No lists.</div>
+        <div class="p-3">No lists.</div>
     </ng-template>
-
-    <button class="float-right" (click)="createNewTaskList()" mat-fab matTooltip="Primary" color="primary"
-        aria-label="Add List">
-        <mat-icon>add</mat-icon>
+        <button class="flex md-button-bottom-fixed" (click)="createNewTaskList()" mat-raised-button matTooltip="Create New Project" color="primary"
+        aria-label="Create New Project">
+        Create New Project
     </button>
 </div>
