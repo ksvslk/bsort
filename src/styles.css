@@ -3,8 +3,13 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html{ height: 100%;  height: -webkit-fill-available; }
+body { 
+    min-height: 100vh;
+     /* mobile viewport bug fix */
+    min-height: -webkit-fill-available;
+    margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
 .flex-column-container {
     @apply p-8;
@@ -31,6 +36,14 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     bottom: 20px !important;
     left: 20px !important;
     right: 20px !important;
+    position: fixed !important;
+}
+
+.icon-top-left-corner-fixed {
+    top: 8px !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: 5px !important;
     position: fixed !important;
 }
 

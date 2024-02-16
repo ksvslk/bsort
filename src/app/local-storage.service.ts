@@ -25,7 +25,7 @@ export class LocalStorageService {
     var targetTaskList = taskLists.find(taskList => taskList.id == taskListId);
     if (targetTaskList) {
       targetTaskList.title = newTitle;
-      localStorage.setItem('taskLists', JSON.stringify(taskLists));
+      localStorage.setItem(this.taskListKey, JSON.stringify(taskLists));
     }
     return this.getTaskList(taskListId);
   }
@@ -73,15 +73,9 @@ export class LocalStorageService {
   }
 
   deleteTask(taskId: number, taskListId:number): Task[] {
-    console.log(taskId)
     const tasks = this.getTasks(taskListId);
-    console.log("before fas. ", tasks);
-
     const updatedTasks = tasks.filter(v => { return v.id != taskId });
-    console.log("before delete. ", updatedTasks);
-
     localStorage.setItem(taskListId.toString(), JSON.stringify(updatedTasks));
-    console.log("deleted. ", this.getTasks(taskListId));
     return this.getTasks(taskListId);
   }
 
@@ -113,11 +107,29 @@ export class LocalStorageService {
 
   getTasks(taskListId: number): Task[] {
     const tasks = localStorage.getItem(taskListId.toString());
-    return tasks ? JSON.parse(tasks) : [];
+    return (tasks ? JSON.parse(tasks) : []);
   }
 
   getTasksByTaskListId(taskListId: number): Task[] {
-    return this.getTasks(taskListId);
+    const tasks = this.getTasks(taskListId);
+    return tasks;
+  }
+
+  saveTasksForList(tasks:Task[], listId:number)
+  {
+    console.log("Saving sorted tasks for: " + listId, tasks)
+    localStorage.setItem(listId.toString(), JSON.stringify(tasks));
+  }
+
+  setAsSorted(listId:number, sorted:boolean = true) : TaskList | undefined
+  {
+    var taskLists = this.getTaskLists();
+    var targetTaskList = taskLists.find(taskList => taskList.id == listId);
+    if (targetTaskList) {
+      targetTaskList.prioritized = sorted
+      localStorage.setItem(this.taskListKey, JSON.stringify(taskLists));
+    }
+    return this.getTaskList(listId);
   }
 
 }

@@ -19,12 +19,11 @@ import {FormsModule} from '@angular/forms';
 import {MatMenuModule} from '@angular/material/menu';
 import {Inject} from '@angular/core';
 import {MAT_BOTTOM_SHEET_DATA} from '@angular/material/bottom-sheet';
-import {MatToolbarModule} from '@angular/material/toolbar';
 
 @Component({
   selector: 'app-task-list',
   standalone: true,
-  imports: [MatListModule, MatToolbarModule, CommonModule, MatButtonModule, MatIconModule,MatMenuModule, RouterModule, MatBottomSheetModule],
+  imports: [MatListModule, CommonModule, MatButtonModule, MatIconModule, MatMenuModule, RouterModule, MatBottomSheetModule],
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.css'
 })
@@ -33,6 +32,7 @@ export class TaskListComponent implements OnInit {
   @Input() id!: number;
   tasks$: Task[] = [];
   taskList$: TaskList | undefined;
+  iconColor$:string = "accent";
 
   constructor(private _bottomSheet: MatBottomSheet, private router: Router, private localStorageService: LocalStorageService) {
   }
@@ -40,6 +40,17 @@ export class TaskListComponent implements OnInit {
   ngOnInit(): void {
     this.tasks$ = this.localStorageService.getTasksByTaskListId(this.id);
     this.taskList$ = this.localStorageService.getTaskList(this.id);
+    if (this.taskList$ == undefined)
+    {
+      this.router.navigateByUrl('');
+    }
+    this.iconColor$ = this.taskList$?.prioritized ? "basic" : "accent";
+  }
+
+  setAsUnsorted()
+  {
+    this.taskList$ = this.localStorageService.setAsSorted(this.id, false);
+    this.iconColor$ = this.taskList$?.prioritized ? "basic" : "accent";
   }
 
   openAddTaskSheet(): void {
@@ -49,6 +60,7 @@ export class TaskListComponent implements OnInit {
       if (taskSubmit && taskSubmit.result.length > 0)
       {
         this.tasks$ = this.localStorageService.addTask(taskSubmit.result, this.id)
+        this.setAsUnsorted()
       }
     });
   }
@@ -78,6 +90,7 @@ export class TaskListComponent implements OnInit {
   deleteTask(taskId:number)
   {
     this.tasks$ = this.localStorageService.deleteTask(taskId, this.id);
+    this.setAsUnsorted()
   }
 
   renameTaskTitle(taskId:number, newTitle:string){
@@ -90,9 +103,11 @@ export class TaskListComponent implements OnInit {
   }
 
   goToSortPage(): void {
-    this.router.navigateByUrl('/sort/' + this.id);
+    if (this.tasks$.length > 1)
+    {
+      this.router.navigateByUrl('/sort/' + this.id, {skipLocationChange:true});
+    }
   }
-
   
 }
 

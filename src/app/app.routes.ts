@@ -5,6 +5,7 @@ import { SortComponent } from './sort/sort.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
-    { path: ':id', component: TaskListComponent},
-    { path: 'sort/:id', component: SortComponent}
+    { path: 'project/:id', component: TaskListComponent},
+    { path: 'sort/:id', component: SortComponent},
+  
 ];

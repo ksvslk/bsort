@@ -1,6 +1,6 @@
 <div class="flex-column-container">
   <div>
-    <mat-toolbar [matMenuTriggerFor]="projectOptions">
+    <h2 [matMenuTriggerFor]="projectOptions">
       {{taskList$?.title}}
       <mat-menu #projectOptions="matMenu" yPosition="below" xPosition="after">
         <button (click)="openEditTaskListSheet()" mat-menu-item>
@@ -12,15 +12,15 @@
           <span>Delete Project</span>
         </button>
       </mat-menu>
-    </mat-toolbar>
-
+    </h2>
   </div>
   <div *ngIf="tasks$.length != 0; then thenBlock else elseBlock"></div>
   <ng-template #thenBlock>
-    <mat-selection-list *ngFor="let task of tasks$">
+    <mat-selection-list *ngFor="let task of tasks$; index as i;">
       <mat-list-item [matMenuTriggerFor]="taskOptions">
-        {{task.title}}
+        {{taskList$?.prioritized ? (i+1 + '. ' + task.title) : task.title}}
       </mat-list-item>
+      <mat-divider></mat-divider>
       <mat-menu #taskOptions="matMenu" yPosition="below" xPosition="after">
         <button (click)="openEditTaskSheet(task.id!, task.title)" mat-menu-item>
           <mat-icon>edit</mat-icon>
@@ -35,9 +35,9 @@
   </ng-template>
 
   <ng-template #elseBlock>
-    <div class="p-3">No tasks.</div>
+    <div class="p-3">No requirements.</div>
   </ng-template>
-  <button class="md-fab-bottom-fixed-left" (click)="goToSortPage()" mat-fab matTooltip="Add" color="accent"
+  <button [disabled]="tasks$.length < 2" color={{iconColor$}} class="md-fab-bottom-fixed-left" (click)="goToSortPage()" mat-fab matTooltip="Add"
     aria-label="Add Task">
     <mat-icon>{{ taskList$?.prioritized ? 'low_priority' : 'play_arrow' }}</mat-icon>
   </button>
